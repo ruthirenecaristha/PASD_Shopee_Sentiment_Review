@@ -1,0 +1,573 @@
+{% extends "base.html" %}
+{% block title %}Hasil Analisis: {{ r.product_name }} — ShopeeSentiment{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Page Header ─────────────────────────────────────── */
+.result-header {
+  background: linear-gradient(135deg, #1A1A2E 0%, #2D1810 100%);
+  padding   : 48px 24px;
+  color     : white;
+}
+
+.result-header-inner {
+  max-width : 1100px;
+  margin    : 0 auto;
+}
+
+.result-breadcrumb {
+  font-size    : 13px;
+  color        : rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+
+.result-breadcrumb a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.result-breadcrumb a:hover { color: white; }
+
+.result-title {
+  font-family  : var(--font-display);
+  font-size    : clamp(22px, 3vw, 34px);
+  font-weight  : 800;
+  margin-bottom: 8px;
+}
+
+.result-meta {
+  font-size : 14px;
+  color     : rgba(255,255,255,0.5);
+  display   : flex;
+  gap       : 20px;
+  flex-wrap : wrap;
+  margin-top: 8px;
+}
+
+/* ── Recommendation Banner ───────────────────────────── */
+.rec-banner {
+  margin      : -20px 0 0;
+  position    : relative;
+  z-index     : 2;
+}
+
+.rec-banner-inner {
+  max-width    : 1100px;
+  margin       : 0 auto;
+  padding      : 0 24px;
+}
+
+.rec-card {
+  border-radius: 20px;
+  padding      : 28px 32px;
+  display      : grid;
+  grid-template-columns: auto 1fr auto;
+  gap          : 24px;
+  align-items  : center;
+  box-shadow   : 0 8px 32px rgba(0,0,0,0.12);
+  color        : white;
+}
+
+.rec-icon { font-size: 52px; }
+
+.rec-label {
+  font-family  : var(--font-display);
+  font-size    : 26px;
+  font-weight  : 800;
+  margin-bottom: 4px;
+}
+
+.rec-msg {
+  font-size  : 14px;
+  opacity    : 0.85;
+  line-height: 1.5;
+  max-width  : 560px;
+}
+
+.rec-conf {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.conf-circle {
+  width          : 80px;
+  height         : 80px;
+  border-radius  : 50%;
+  background     : rgba(255,255,255,0.2);
+  border         : 3px solid rgba(255,255,255,0.4);
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  justify-content: center;
+}
+
+.conf-num  { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+.conf-label{ font-size: 10px; opacity: .7; }
+
+/* ── Content Layout ──────────────────────────────────── */
+.result-body {
+  max-width: 1100px;
+  margin   : 32px auto 60px;
+  padding  : 0 24px;
+  display  : grid;
+  grid-template-columns: 1fr 340px;
+  gap      : 24px;
+}
+
+.result-main { display: flex; flex-direction: column; gap: 24px; }
+.result-side { display: flex; flex-direction: column; gap: 24px; }
+
+/* ── Stat Cards ──────────────────────────────────────── */
+.stats-row {
+  display              : grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap                  : 16px;
+}
+
+.stat-card {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 14px;
+  padding      : 20px;
+  text-align   : center;
+}
+
+.stat-card-num {
+  font-family: var(--font-display);
+  font-size  : 32px;
+  font-weight: 800;
+  display    : block;
+}
+
+.stat-card-label {
+  font-size : 12px;
+  color     : var(--text-muted);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ── Chart Cards ─────────────────────────────────────── */
+.chart-grid {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+  gap                  : 16px;
+}
+
+.chart-card {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 14px;
+  padding      : 20px;
+}
+
+.chart-card img { width: 100%; height: auto; display: block; }
+.chart-title    { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+
+.chart-card-full {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 14px;
+  padding      : 20px;
+}
+
+/* ── Keywords ────────────────────────────────────────── */
+.keywords-section {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 14px;
+  padding      : 20px;
+}
+
+.keywords-grid {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+  gap                  : 16px;
+  margin-top           : 16px;
+}
+
+.keyword-col-title {
+  font-size    : 12px;
+  font-weight  : 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.keyword-tags {
+  display  : flex;
+  flex-wrap: wrap;
+  gap      : 6px;
+}
+
+.kw-tag {
+  padding      : 5px 12px;
+  border-radius: 20px;
+  font-size    : 13px;
+  font-weight  : 600;
+}
+
+/* ── Review Samples ──────────────────────────────────── */
+.reviews-section {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 14px;
+  padding      : 20px;
+}
+
+.review-tabs {
+  display      : flex;
+  gap          : 4px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: -2px;
+}
+
+.rtab {
+  padding     : 8px 16px;
+  font-size   : 13px;
+  font-weight : 700;
+  cursor      : pointer;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color       : var(--text-muted);
+  transition  : all .15s;
+}
+
+.rtab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+.review-list { display: none; flex-direction: column; gap: 10px; }
+.review-list.show { display: flex; }
+
+.review-item {
+  background   : var(--bg);
+  border-radius: 10px;
+  padding      : 12px 16px;
+  font-size    : 14px;
+  line-height  : 1.6;
+  color        : var(--text);
+  border-left  : 3px solid var(--border);
+}
+
+.review-item.pos { border-left-color: var(--green); }
+.review-item.neg { border-left-color: var(--orange); }
+
+/* ── Sidebar ─────────────────────────────────────────── */
+.sidebar-card {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 14px;
+  padding      : 20px;
+}
+
+.sidebar-title {
+  font-size    : 14px;
+  font-weight  : 700;
+  margin-bottom: 14px;
+  display      : flex;
+  gap          : 6px;
+  align-items  : center;
+}
+
+.sentiment-bar-row {
+  display      : flex;
+  align-items  : center;
+  gap          : 8px;
+  margin-bottom: 10px;
+}
+
+.sentiment-bar-label { font-size: 13px; font-weight: 600; min-width: 68px; }
+.sentiment-bar-track {
+  flex         : 1;
+  height       : 10px;
+  background   : var(--border);
+  border-radius: 5px;
+  overflow     : hidden;
+}
+
+.sentiment-bar-fill {
+  height       : 100%;
+  border-radius: 5px;
+  transition   : width .5s ease;
+}
+
+.sentiment-bar-pct { font-size: 12px; color: var(--text-muted); min-width: 40px; text-align: right; }
+
+.rating-row {
+  display      : flex;
+  align-items  : center;
+  gap          : 8px;
+  margin-bottom: 8px;
+  font-size    : 13px;
+}
+
+.rating-row-star { min-width: 28px; color: var(--text-muted); }
+.rating-bar-wrap {
+  flex    : 1;
+  height  : 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rating-bar-inner {
+  height    : 100%;
+  border-radius: 4px;
+  background: var(--orange);
+}
+
+.rating-row-count { min-width: 50px; text-align: right; color: var(--text-muted); }
+
+.url-display {
+  font-size    : 11px;
+  color        : var(--text-muted);
+  word-break   : break-all;
+  background   : var(--bg);
+  border-radius: 8px;
+  padding      : 8px 10px;
+  margin-top   : 8px;
+  border       : 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  .result-body { grid-template-columns: 1fr; }
+  .rec-card    { grid-template-columns: auto 1fr; }
+  .rec-conf    { display: none; }
+  .stats-row   { grid-template-columns: 1fr 1fr; }
+  .chart-grid  { grid-template-columns: 1fr; }
+  .keywords-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Page Header ───────────────────────────────────────────── -->
+<div class="result-header">
+  <div class="result-header-inner">
+    <div class="result-breadcrumb">
+      <a href="/">Beranda</a> &rsaquo; <a href="/analisis">Analisis</a> &rsaquo; Hasil
+    </div>
+    <h1 class="result-title">{{ r.product_name }}</h1>
+    <div class="result-meta">
+      <span>📅 {{ r.generated_at }}</span>
+      <span>📊 {{ r.total_reviews }} ulasan dianalisis</span>
+      <span>⭐ Rata-rata {{ r.average_rating }}/5.0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Recommendation Banner ─────────────────────────────────── -->
+<div class="rec-banner">
+  <div class="rec-banner-inner">
+    <div class="rec-card" style="background: {{ r.recommendation_color }}">
+      <div class="rec-icon">
+        {% if r.recommendation == "LAYAK DIBELI" %}✅
+        {% elif r.recommendation == "PERTIMBANGKAN" %}⚠️
+        {% else %}🚫{% endif %}
+      </div>
+      <div>
+        <div class="rec-label">{{ r.recommendation }}</div>
+        <div class="rec-msg">{{ r.recommendation_msg }}</div>
+      </div>
+      <div class="rec-conf">
+        <div class="conf-circle">
+          <span class="conf-num">{{ r.confidence_score }}%</span>
+          <span class="conf-label">Confidence</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Body ──────────────────────────────────────────────────── -->
+<div class="result-body">
+
+  <!-- ── Main Column ──────────────────────────────────────────── -->
+  <div class="result-main">
+
+    <!-- Stat Cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-card-num text-orange">{{ r.average_rating }}</span>
+        <div class="stars">
+          {% set full = r.average_rating | int %}
+          {% for i in range(full) %}★{% endfor %}
+          {% for i in range(5 - full) %}☆{% endfor %}
+        </div>
+        <div class="stat-card-label">Rata-rata Rating</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num" style="color:var(--green)">
+          {{ r.sentiment_pct.positive }}%
+        </span>
+        <div class="stat-card-label">Ulasan Positif</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card-num" style="color:var(--orange)">
+          {{ r.sentiment_pct.negative }}%
+        </span>
+        <div class="stat-card-label">Ulasan Negatif</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">📊 Distribusi Rating</div>
+        <img src="data:image/png;base64,{{ r.chart_rating }}" alt="Rating Chart" />
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">💬 Distribusi Sentimen</div>
+        <img src="data:image/png;base64,{{ r.chart_sentiment }}" alt="Sentiment Chart" />
+      </div>
+    </div>
+
+    <!-- Trend Chart -->
+    <div class="chart-card-full">
+      <div class="chart-title">📈 Tren Rating dari Waktu ke Waktu</div>
+      <img src="data:image/png;base64,{{ r.chart_trend }}" alt="Trend Chart" style="width:100%;height:auto" />
+    </div>
+
+    <!-- Keywords -->
+    <div class="keywords-section">
+      <div class="chart-title">🔑 Kata Kunci Ulasan</div>
+      <div class="keywords-grid">
+        <div>
+          <div class="keyword-col-title" style="color:var(--green)">👍 Pujian Pembeli</div>
+          <div class="keyword-tags">
+            {% for kw in r.common_praises %}
+            <span class="kw-tag" style="background:#E8F8F6;color:var(--green)">{{ kw }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div>
+          <div class="keyword-col-title" style="color:var(--orange)">👎 Keluhan Pembeli</div>
+          <div class="keyword-tags">
+            {% for kw in r.common_complaints %}
+            <span class="kw-tag" style="background:#FFF3F0;color:var(--orange)">{{ kw }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+        <div class="keyword-col-title" style="color:var(--text-muted);margin-bottom:8px">
+          🔎 Semua Kata Kunci Dominan
+        </div>
+        <div class="keyword-tags">
+          {% for kw in r.top_keywords %}
+          <span class="kw-tag badge badge-orange">{{ kw }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Samples -->
+    <div class="reviews-section">
+      <div class="chart-title">📝 Cuplikan Ulasan Pembeli</div>
+      <div class="review-tabs">
+        <div class="rtab active" onclick="switchTab(this, 'pos-reviews')">
+          ✅ Ulasan Positif ({{ r.sentiment_counts.positive }})
+        </div>
+        <div class="rtab" onclick="switchTab(this, 'neg-reviews')">
+          ❌ Ulasan Negatif ({{ r.sentiment_counts.negative }})
+        </div>
+      </div>
+
+      <div class="review-list show" id="pos-reviews">
+        {% for rev in r.sample_positives %}
+        <div class="review-item pos">💬 {{ rev }}</div>
+        {% else %}
+        <div class="review-item">Tidak ada cuplikan ulasan positif.</div>
+        {% endfor %}
+      </div>
+
+      <div class="review-list" id="neg-reviews">
+        {% for rev in r.sample_negatives %}
+        <div class="review-item neg">💬 {{ rev }}</div>
+        {% else %}
+        <div class="review-item">Tidak ada cuplikan ulasan negatif.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div><!-- /result-main -->
+
+  <!-- ── Sidebar ───────────────────────────────────────────────── -->
+  <div class="result-side">
+
+    <!-- Sentiment breakdown -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">💬 Rincian Sentimen</div>
+      <div class="sentiment-bar-row">
+        <div class="sentiment-bar-label" style="color:var(--green)">✅ Positif</div>
+        <div class="sentiment-bar-track">
+          <div class="sentiment-bar-fill" style="width:{{ r.sentiment_pct.positive }}%;background:var(--green)"></div>
+        </div>
+        <div class="sentiment-bar-pct">{{ r.sentiment_pct.positive }}%</div>
+      </div>
+      <div class="sentiment-bar-row">
+        <div class="sentiment-bar-label" style="color:var(--yellow)">➖ Netral</div>
+        <div class="sentiment-bar-track">
+          <div class="sentiment-bar-fill" style="width:{{ r.sentiment_pct.neutral }}%;background:var(--yellow)"></div>
+        </div>
+        <div class="sentiment-bar-pct">{{ r.sentiment_pct.neutral }}%</div>
+      </div>
+      <div class="sentiment-bar-row">
+        <div class="sentiment-bar-label" style="color:var(--orange)">❌ Negatif</div>
+        <div class="sentiment-bar-track">
+          <div class="sentiment-bar-fill" style="width:{{ r.sentiment_pct.negative }}%;background:var(--orange)"></div>
+        </div>
+        <div class="sentiment-bar-pct">{{ r.sentiment_pct.negative }}%</div>
+      </div>
+    </div>
+
+    <!-- Rating breakdown -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">⭐ Rincian Rating</div>
+      {% set total = r.total_reviews %}
+      {% for star in [5,4,3,2,1] %}
+      {% set cnt = r.rating_distribution[star] %}
+      {% set pct = (cnt / total * 100) | round(0) | int %}
+      <div class="rating-row">
+        <div class="rating-row-star">{{ star }}★</div>
+        <div class="rating-bar-wrap">
+          <div class="rating-bar-inner" style="width:{{ pct }}%"></div>
+        </div>
+        <div class="rating-row-count">{{ cnt }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Info card -->
+    <div class="sidebar-card">
+      <div class="sidebar-title">ℹ️ Info Analisis</div>
+      <div style="font-size:13px;display:flex;flex-direction:column;gap:8px;color:var(--text-muted)">
+        <div>📊 <strong>{{ r.total_reviews }}</strong> ulasan dianalisis</div>
+        <div>🤖 Model: Lexicon-Based NLP</div>
+        <div>🌐 Bahasa: Bahasa Indonesia</div>
+        <div>📅 {{ r.generated_at }}</div>
+      </div>
+      <div class="url-display">{{ r.product_url }}</div>
+    </div>
+
+    <!-- Action -->
+    <div class="sidebar-card" style="text-align:center">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">
+        Ingin menganalisis produk lain?
+      </p>
+      <a href="/analisis" class="btn btn-primary" style="width:100%;justify-content:center">
+        🔍 Analisis Produk Baru
+      </a>
+    </div>
+
+  </div><!-- /result-side -->
+
+</div><!-- /result-body -->
+
+<script>
+function switchTab(el, targetId) {
+  document.querySelectorAll(".rtab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".review-list").forEach(l => l.classList.remove("show"));
+  el.classList.add("active");
+  document.getElementById(targetId).classList.add("show");
+}
+</script>
+
+{% endblock %}

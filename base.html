@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ShopeeSentiment{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange      : #EE4D2D;
+      --orange-dark : #C73B1E;
+      --orange-light: #FFF3F0;
+      --orange-mid  : #FF6B47;
+      --green       : #26AA99;
+      --yellow      : #FFA800;
+      --text        : #1A1A2E;
+      --text-muted  : #6B7280;
+      --bg          : #FAFAFA;
+      --white       : #FFFFFF;
+      --border      : #E5E7EB;
+      --shadow      : 0 4px 24px rgba(238,77,45,0.10);
+      --shadow-sm   : 0 2px 8px rgba(0,0,0,0.06);
+      --radius      : 16px;
+      --radius-sm   : 10px;
+      --nav-h       : 64px;
+      --font-body   : 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family  : var(--font-body);
+      background   : var(--bg);
+      color        : var(--text);
+      min-height   : 100vh;
+      display      : flex;
+      flex-direction: column;
+    }
+
+    /* ── Navbar ────────────────────────────────────────────── */
+    .navbar {
+      position    : sticky;
+      top         : 0;
+      z-index     : 100;
+      background  : var(--white);
+      border-bottom: 1px solid var(--border);
+      height      : var(--nav-h);
+      display     : flex;
+      align-items : center;
+      padding     : 0 40px;
+      box-shadow  : 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .nav-inner {
+      max-width  : 1200px;
+      width      : 100%;
+      margin     : auto;
+      display    : flex;
+      align-items: center;
+      gap        : 32px;
+    }
+
+    .nav-logo {
+      display    : flex;
+      align-items: center;
+      gap        : 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-icon {
+      width       : 36px;
+      height      : 36px;
+      background  : var(--orange);
+      border-radius: 10px;
+      display     : flex;
+      align-items : center;
+      justify-content: center;
+      font-size   : 18px;
+    }
+
+    .nav-logo-text {
+      font-family : var(--font-display);
+      font-size   : 20px;
+      font-weight : 800;
+      color       : var(--text);
+    }
+
+    .nav-logo-text span { color: var(--orange); }
+
+    .nav-links {
+      display    : flex;
+      gap        : 4px;
+      list-style : none;
+      margin-left: auto;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color          : var(--text-muted);
+      font-size      : 14px;
+      font-weight    : 600;
+      padding        : 8px 16px;
+      border-radius  : 8px;
+      transition     : all .2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: var(--orange-light);
+      color     : var(--orange);
+    }
+
+    .nav-cta {
+      background: var(--orange) !important;
+      color     : white !important;
+      padding   : 8px 20px !important;
+    }
+    .nav-cta:hover {
+      background : var(--orange-dark) !important;
+      color      : white !important;
+    }
+
+    /* ── Main Content ──────────────────────────────────────── */
+    main { flex: 1; }
+
+    .container {
+      max-width: 1200px;
+      margin   : 0 auto;
+      padding  : 0 24px;
+    }
+
+    /* ── Cards ─────────────────────────────────────────────── */
+    .card {
+      background   : var(--white);
+      border-radius: var(--radius);
+      border       : 1px solid var(--border);
+      box-shadow   : var(--shadow-sm);
+      padding      : 28px;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────── */
+    .btn {
+      display        : inline-flex;
+      align-items    : center;
+      gap            : 8px;
+      padding        : 12px 28px;
+      border-radius  : 10px;
+      font-family    : var(--font-body);
+      font-size      : 15px;
+      font-weight    : 600;
+      cursor         : pointer;
+      border         : none;
+      text-decoration: none;
+      transition     : all .2s;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color     : white;
+    }
+    .btn-primary:hover {
+      background : var(--orange-dark);
+      transform  : translateY(-1px);
+      box-shadow : 0 6px 20px rgba(238,77,45,0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border    : 2px solid var(--border);
+      color     : var(--text);
+    }
+    .btn-outline:hover {
+      border-color: var(--orange);
+      color       : var(--orange);
+    }
+
+    /* ── Badges ───────────────────────────────────────────── */
+    .badge {
+      display      : inline-block;
+      padding      : 4px 12px;
+      border-radius: 20px;
+      font-size    : 12px;
+      font-weight  : 700;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-orange { background: var(--orange-light); color: var(--orange); }
+    .badge-green  { background: #E8F8F6;              color: var(--green);  }
+    .badge-yellow { background: #FFF8E7;              color: var(--yellow); }
+
+    /* ── Footer ────────────────────────────────────────────── */
+    footer {
+      background  : var(--text);
+      color       : rgba(255,255,255,0.55);
+      padding     : 28px 40px;
+      text-align  : center;
+      font-size   : 13px;
+      margin-top  : auto;
+    }
+
+    footer strong { color: var(--orange); }
+
+    /* ── Stars ─────────────────────────────────────────────── */
+    .stars { color: #FFA800; font-size: 18px; letter-spacing: 2px; }
+
+    /* ── Utility ───────────────────────────────────────────── */
+    .text-muted   { color: var(--text-muted); }
+    .text-orange  { color: var(--orange); }
+    .text-center  { text-align: center; }
+    .fw-bold      { font-weight: 700; }
+    .mt-4         { margin-top: 32px; }
+    .mt-2         { margin-top: 16px; }
+    .mb-2         { margin-bottom: 16px; }
+    .gap-2        { gap: 16px; }
+    .flex         { display: flex; }
+    .flex-wrap    { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0 16px; }
+      .nav-links li:not(:last-child) { display: none; }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Navbar ───────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon">🔍</div>
+      <span class="nav-logo-text">Shopee<span>Sentiment</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="{% if request.endpoint == 'home' %}active{% endif %}">Beranda</a></li>
+      <li><a href="/analisis" class="{% if request.endpoint == 'analisis' %}active{% endif %}">Analisis</a></li>
+      <li><a href="/tentang" class="{% if request.endpoint == 'tentang' %}active{% endif %}">Tentang</a></li>
+      <li><a href="/analisis" class="nav-cta">Cek Produk →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Main ─────────────────────────────────────────────────── -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<footer>
+  <p>© 2025 <strong>ShopeeSentiment</strong> — Perancangan Aplikasi Sains Data &nbsp;|&nbsp; Program Studi Sains Data, Telkom University</p>
+</footer>
+
+</body>
+</html>
