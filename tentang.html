@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% block title %}Tentang — ShopeeSentiment{% endblock %}
+
+{% block extra_head %}
+<style>
+.about-hero {
+  background: linear-gradient(135deg, #1A1A2E 0%, #2D1810 100%);
+  padding   : 64px 24px;
+  text-align: center;
+  color     : white;
+}
+
+.about-hero h1 {
+  font-family  : var(--font-display);
+  font-size    : clamp(28px, 4vw, 44px);
+  font-weight  : 800;
+  margin-bottom: 12px;
+}
+
+.about-hero p {
+  font-size  : 16px;
+  color      : rgba(255,255,255,0.65);
+  max-width  : 480px;
+  margin     : 0 auto;
+  line-height: 1.6;
+}
+
+.about-body {
+  max-width: 900px;
+  margin   : 48px auto 72px;
+  padding  : 0 24px;
+  display  : flex;
+  flex-direction: column;
+  gap      : 28px;
+}
+
+.about-card {
+  background   : white;
+  border-radius: var(--radius);
+  padding      : 32px;
+  border       : 1px solid var(--border);
+}
+
+.about-card h2 {
+  font-family  : var(--font-display);
+  font-size    : 22px;
+  font-weight  : 800;
+  margin-bottom: 16px;
+  display      : flex;
+  gap          : 10px;
+  align-items  : center;
+}
+
+.about-card p {
+  color      : var(--text-muted);
+  line-height: 1.7;
+  font-size  : 15px;
+  margin-bottom: 12px;
+}
+
+.concept-grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap                  : 16px;
+  margin-top           : 16px;
+}
+
+.concept-card {
+  background   : var(--bg);
+  border-radius: 12px;
+  padding      : 18px;
+  border       : 1px solid var(--border);
+}
+
+.concept-title {
+  font-weight  : 700;
+  font-size    : 14px;
+  margin-bottom: 6px;
+  display      : flex;
+  gap          : 8px;
+  align-items  : center;
+}
+
+.concept-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+.tech-tags {
+  display  : flex;
+  gap      : 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.tech-tag {
+  padding      : 5px 14px;
+  background   : var(--orange-light);
+  color        : var(--orange-dark);
+  border-radius: 20px;
+  font-size    : 13px;
+  font-weight  : 700;
+}
+
+.pipeline-steps {
+  display  : flex;
+  flex-direction: column;
+  gap      : 12px;
+  margin-top: 16px;
+}
+
+.pipeline-step {
+  display      : flex;
+  gap          : 14px;
+  align-items  : flex-start;
+  background   : var(--bg);
+  border-radius: 10px;
+  padding      : 14px;
+}
+
+.pipe-num {
+  width          : 28px;
+  height         : 28px;
+  border-radius  : 50%;
+  background     : var(--orange);
+  color          : white;
+  font-size      : 12px;
+  font-weight    : 700;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  flex-shrink    : 0;
+}
+
+.pipe-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.pipe-desc  { font-size: 13px; color: var(--text-muted); }
+
+.info-row {
+  display      : flex;
+  gap          : 12px;
+  align-items  : baseline;
+  padding      : 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size    : 14px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-key   { font-weight: 700; min-width: 160px; }
+.info-value { color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="about-hero">
+  <span class="badge" style="background:rgba(255,255,255,0.15);color:white;margin-bottom:16px">
+    📚 Tentang Aplikasi
+  </span>
+  <h1>ShopeeSentiment</h1>
+  <p>Aplikasi analisis sentimen ulasan produk Shopee berbasis Python untuk mata kuliah Perancangan Aplikasi Sains Data.</p>
+</div>
+
+<div class="about-body">
+
+  <!-- Deskripsi -->
+  <div class="about-card">
+    <h2>📌 Deskripsi Aplikasi</h2>
+    <p>
+      <strong>ShopeeSentiment</strong> adalah aplikasi web berbasis Python yang memungkinkan pengguna
+      menganalisis sentimen ulasan produk Shopee secara otomatis. Pengguna hanya perlu memasukkan
+      URL produk Shopee, dan sistem akan menganalisis ratusan ulasan untuk memberikan ringkasan
+      lengkap beserta rekomendasi apakah produk tersebut layak dibeli atau tidak.
+    </p>
+    <p>
+      Aplikasi dirancang menggunakan pendekatan <strong>hybrid paradigma</strong> — menggabungkan
+      Object-Oriented Programming (OOP) untuk struktur aplikasi dan Functional Programming (FP)
+      untuk transformasi data, sesuai materi Week 5–6 mata kuliah Perancangan Aplikasi Sains Data,
+      Telkom University.
+    </p>
+    <div class="tech-tags">
+      <span class="tech-tag">Python 3.10+</span>
+      <span class="tech-tag">Flask</span>
+      <span class="tech-tag">Pandas</span>
+      <span class="tech-tag">NumPy</span>
+      <span class="tech-tag">Matplotlib</span>
+      <span class="tech-tag">OOP + FP</span>
+    </div>
+  </div>
+
+  <!-- OOP Concepts -->
+  <div class="about-card">
+    <h2>🏗️ Object-Oriented Programming</h2>
+    <p>Aplikasi mengimplementasikan tiga prinsip OOP utama sesuai materi perkuliahan:</p>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-title"><span>🔒</span> Encapsulation</div>
+        <p class="concept-desc">
+          Setiap kelas menyembunyikan atribut private (<code>_filepath</code>, <code>_reviews</code>)
+          dan hanya mengekspos metode publik sebagai antarmuka. Contoh: <code>DataLoader._filepath</code>
+          hanya bisa diakses via <code>load()</code>.
+        </p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title"><span>🧬</span> Inheritance</div>
+        <p class="concept-desc">
+          <code>BaseAnalyzer</code> sebagai parent class. <code>RatingAnalyzer</code> dan
+          <code>LexiconAnalyzer</code> mewarisi sebagai child. <code>HybridAnalyzer</code>
+          mewarisi dari <code>LexiconAnalyzer</code> (inheritance bertingkat).
+        </p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title"><span>🔄</span> Polymorphism</div>
+        <p class="concept-desc">
+          Metode <code>analyze()</code> dipanggil identik pada semua analyzer, tetapi perilakunya
+          berbeda-beda: rating-only, lexicon+rating, atau hybrid dengan bobot likes.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FP Concepts -->
+  <div class="about-card">
+    <h2>⚡ Functional Programming</h2>
+    <p>Tiga prinsip FP diimplementasikan pada lapisan transformasi data:</p>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-title"><span>🧊</span> Immutability</div>
+        <p class="concept-desc">
+          Kamus kata (<code>STOPWORDS_ID</code>, <code>POSITIVE_WORDS</code>) menggunakan
+          <code>frozenset</code>. Semua pure function selalu mengembalikan objek baru tanpa
+          mengubah argumen input.
+        </p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title"><span>🎯</span> Referential Transparency</div>
+        <p class="concept-desc">
+          <code>score_to_sentiment(5)</code> selalu mengembalikan <code>"positive"</code>.
+          Output hanya bergantung pada input, tidak ada state global yang berubah.
+        </p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-title"><span>🔧</span> Higher-Order Functions</div>
+        <p class="concept-desc">
+          <code>make_classifier()</code> mengembalikan fungsi. <code>preprocess_pipeline()</code>
+          menggunakan <code>reduce</code>. <code>filter_by_sentiment()</code> menerima fungsi
+          sebagai argumen (<code>map</code>, <code>lambda</code>).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="about-card">
+    <h2>🔄 Pipeline Analisis</h2>
+    <p>Alur kerja dari URL produk hingga laporan hasil:</p>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <div class="pipe-num">1</div>
+        <div>
+          <div class="pipe-title">Input URL Produk</div>
+          <div class="pipe-desc">Pengguna memasukkan URL produk Shopee melalui form web.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-num">2</div>
+        <div>
+          <div class="pipe-title">Pengambilan Ulasan (Scraping)</div>
+          <div class="pipe-desc"><code>ShopeScraper.scrape()</code> mengambil ulasan dari dataset. Dalam produksi: gunakan Selenium/Playwright.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-num">3</div>
+        <div>
+          <div class="pipe-title">Preprocessing Teks (FP Pipeline)</div>
+          <div class="pipe-desc"><code>clean_text → tokenize → remove_stopwords</code> via <code>functools.reduce</code> (function composition).</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-num">4</div>
+        <div>
+          <div class="pipe-title">Klasifikasi Sentimen (OOP Polymorphism)</div>
+          <div class="pipe-desc">Rating sebagai anchor + kamus kata Bahasa Indonesia untuk label positif/netral/negatif.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-num">5</div>
+        <div>
+          <div class="pipe-title">Agregasi & Visualisasi</div>
+          <div class="pipe-desc">Statistik rating, distribusi sentimen, keyword extraction, dan pembuatan chart (Matplotlib).</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-num">6</div>
+        <div>
+          <div class="pipe-title">Rekomendasi & Laporan</div>
+          <div class="pipe-desc">Skor gabungan (60% sentimen + 40% rating) menghasilkan label: Layak Dibeli / Pertimbangkan / Hati-Hati.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Info -->
+  <div class="about-card">
+    <h2>📋 Informasi Proyek</h2>
+    <div class="info-row"><div class="info-key">Mata Kuliah</div><div class="info-value">Perancangan Aplikasi Sains Data (CDK2KAB3)</div></div>
+    <div class="info-row"><div class="info-key">Universitas</div><div class="info-value">Telkom University — Program Studi Sarjana Sains Data</div></div>
+    <div class="info-row"><div class="info-key">Semester</div><div class="info-value">Genap 2024/2025</div></div>
+    <div class="info-row"><div class="info-key">Materi</div><div class="info-value">Week 5–6: Object-Oriented Programming & Functional Programming</div></div>
+    <div class="info-row"><div class="info-key">Dataset</div><div class="info-value">Shopee Sampled Reviews (2.500 ulasan, rating 1–5)</div></div>
+    <div class="info-row"><div class="info-key">Framework Web</div><div class="info-value">Flask + Jinja2 + HTML/CSS/JS</div></div>
+    <div class="info-row"><div class="info-key">Model NLP</div><div class="info-value">Rule-based Lexicon Bahasa Indonesia (extendable ke IndoBERT)</div></div>
+  </div>
+
+</div>
+
+{% endblock %}

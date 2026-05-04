@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% block title %}Analisis Produk — ShopeeSentiment{% endblock %}
+
+{% block extra_head %}
+<style>
+.analisis-hero {
+  background: linear-gradient(135deg, #FFF3F0 0%, #FAFAFA 100%);
+  padding   : 56px 24px;
+  text-align: center;
+}
+
+.analisis-hero h1 {
+  font-family  : var(--font-display);
+  font-size    : clamp(28px, 4vw, 44px);
+  font-weight  : 800;
+  margin-bottom: 12px;
+}
+
+.analisis-hero p {
+  color    : var(--text-muted);
+  font-size: 16px;
+  max-width: 480px;
+  margin   : 0 auto;
+  line-height: 1.6;
+}
+
+/* ── Form Card ───────────────────────────────────────── */
+.form-section {
+  max-width: 720px;
+  margin   : -28px auto 60px;
+  padding  : 0 24px;
+}
+
+.form-card {
+  background   : white;
+  border-radius: 20px;
+  padding      : 40px;
+  box-shadow   : 0 12px 48px rgba(238,77,45,0.10);
+  border       : 1px solid var(--border);
+}
+
+.form-label {
+  display      : block;
+  font-size    : 14px;
+  font-weight  : 700;
+  color        : var(--text);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width        : 100%;
+  padding      : 14px 18px;
+  border       : 2px solid var(--border);
+  border-radius: 12px;
+  font-family  : var(--font-body);
+  font-size    : 15px;
+  color        : var(--text);
+  outline      : none;
+  transition   : border-color .2s, box-shadow .2s;
+}
+
+.form-input:focus {
+  border-color: var(--orange);
+  box-shadow  : 0 0 0 4px rgba(238,77,45,0.08);
+}
+
+.form-input::placeholder { color: var(--text-muted); }
+
+.form-hint {
+  font-size    : 12px;
+  color        : var(--text-muted);
+  margin-top   : 6px;
+  display      : flex;
+  align-items  : center;
+  gap          : 4px;
+}
+
+.form-submit {
+  width      : 100%;
+  padding    : 15px;
+  font-size  : 16px;
+  margin-top : 20px;
+  border-radius: 12px;
+  justify-content: center;
+}
+
+.error-box {
+  background   : #FFF3F0;
+  border       : 1.5px solid var(--orange);
+  border-radius: 12px;
+  padding      : 14px 18px;
+  color        : var(--orange-dark);
+  font-size    : 14px;
+  margin-bottom: 20px;
+  display      : flex;
+  gap          : 10px;
+  align-items  : center;
+}
+
+/* ── Loading overlay ─────────────────────────────────── */
+.loading-overlay {
+  display        : none;
+  position       : fixed;
+  inset          : 0;
+  background     : rgba(26,26,46,0.6);
+  z-index        : 200;
+  flex-direction : column;
+  align-items    : center;
+  justify-content: center;
+  gap            : 20px;
+}
+
+.loading-overlay.show { display: flex; }
+
+.loading-card {
+  background   : white;
+  border-radius: 20px;
+  padding      : 40px 56px;
+  text-align   : center;
+  box-shadow   : 0 24px 64px rgba(0,0,0,0.15);
+}
+
+.spinner {
+  width        : 52px;
+  height       : 52px;
+  border       : 4px solid var(--orange-light);
+  border-top   : 4px solid var(--orange);
+  border-radius: 50%;
+  animation    : spin 0.8s linear infinite;
+  margin       : 0 auto 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-title {
+  font-family  : var(--font-display);
+  font-size    : 20px;
+  font-weight  : 800;
+  margin-bottom: 6px;
+}
+
+.loading-steps {
+  font-size : 13px;
+  color     : var(--text-muted);
+  list-style: none;
+  margin-top: 16px;
+  text-align: left;
+}
+
+.loading-steps li {
+  padding   : 4px 0;
+  display   : flex;
+  gap       : 8px;
+  align-items: center;
+}
+
+.loading-steps li::before {
+  content    : "◦";
+  color      : var(--orange);
+  font-size  : 16px;
+}
+
+/* ── Example URLs ────────────────────────────────────── */
+.examples-section {
+  max-width : 720px;
+  margin    : 0 auto 60px;
+  padding   : 0 24px;
+}
+
+.examples-title {
+  font-size    : 13px;
+  font-weight  : 700;
+  color        : var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.example-chips {
+  display : flex;
+  gap     : 8px;
+  flex-wrap: wrap;
+}
+
+.example-chip {
+  background   : white;
+  border       : 1.5px solid var(--border);
+  border-radius: 20px;
+  padding      : 7px 16px;
+  font-size    : 13px;
+  color        : var(--text-muted);
+  cursor       : pointer;
+  transition   : all .2s;
+  user-select  : none;
+}
+
+.example-chip:hover {
+  border-color: var(--orange);
+  color       : var(--orange);
+  background  : var(--orange-light);
+}
+
+/* ── Tips ────────────────────────────────────────────── */
+.tips-grid {
+  max-width           : 720px;
+  margin              : 0 auto 60px;
+  padding             : 0 24px;
+  display             : grid;
+  grid-template-columns: 1fr 1fr;
+  gap                 : 16px;
+}
+
+.tip-card {
+  background   : white;
+  border       : 1px solid var(--border);
+  border-radius: 12px;
+  padding      : 18px;
+  display      : flex;
+  gap          : 12px;
+  align-items  : flex-start;
+}
+
+.tip-icon { font-size: 22px; flex-shrink: 0; }
+.tip-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.tip-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+@media (max-width: 600px) {
+  .form-card   { padding: 24px 20px; }
+  .tips-grid   { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <div class="loading-title">Sedang Menganalisis...</div>
+    <p style="font-size:14px;color:var(--text-muted)">Mohon tunggu sebentar</p>
+    <ul class="loading-steps">
+      <li>Mengambil ulasan produk</li>
+      <li>Menjalankan preprocessing teks</li>
+      <li>Mengklasifikasikan sentimen (NLP)</li>
+      <li>Menghitung statistik &amp; grafik</li>
+      <li>Membuat rekomendasi akhir</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── Hero ─────────────────────────────────────────── -->
+<div class="analisis-hero">
+  <span class="badge badge-orange" style="margin-bottom:16px">🔍 Analisis Produk</span>
+  <h1>Cek Produk Shopee<br>Sebelum Beli</h1>
+  <p>Tempelkan URL produk Shopee dan dapatkan laporan sentimen lengkap dalam detik.</p>
+</div>
+
+<!-- ── Form ─────────────────────────────────────────── -->
+<div class="form-section">
+  <div class="form-card">
+    {% if error %}
+    <div class="error-box">
+      <span>⚠️</span> {{ error }}
+    </div>
+    {% endif %}
+
+    <form action="/analisis" method="POST" id="analysisForm">
+      <label class="form-label" for="urlInput">
+        🔗 URL Produk Shopee
+      </label>
+      <input
+        class="form-input"
+        type="text"
+        id="urlInput"
+        name="product_url"
+        placeholder="https://shopee.co.id/nama-produk-i.12345678.9876543"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="form-hint">
+        <span>💡</span>
+        Salin URL dari halaman produk Shopee — bisa dari browser desktop maupun mobile.
+      </div>
+
+      <button type="submit" class="btn btn-primary form-submit" id="submitBtn">
+        🚀 Analisis Sekarang
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Example URLs ──────────────────────────────────── -->
+<div class="examples-section">
+  <div class="examples-title">Contoh URL Shopee</div>
+  <div class="example-chips">
+    <div class="example-chip" onclick="setUrl(this)">
+      Smartphone Redmi Note
+    </div>
+    <div class="example-chip" onclick="setUrl(this)">
+      Sepatu Olahraga Pria
+    </div>
+    <div class="example-chip" onclick="setUrl(this)">
+      Charger Type-C 65W
+    </div>
+    <div class="example-chip" onclick="setUrl(this)">
+      Tas Wanita Kulit
+    </div>
+    <div class="example-chip" onclick="setUrl(this)">
+      Suplemen Vitamin C
+    </div>
+  </div>
+</div>
+
+<!-- ── Tips ──────────────────────────────────────────── -->
+<div class="tips-grid">
+  <div class="tip-card">
+    <div class="tip-icon">📋</div>
+    <div>
+      <div class="tip-title">Cara Mendapatkan URL</div>
+      <p class="tip-desc">Buka produk di Shopee, salin URL dari address bar browser Anda.</p>
+    </div>
+  </div>
+  <div class="tip-card">
+    <div class="tip-icon">⏱️</div>
+    <div>
+      <div class="tip-title">Waktu Analisis</div>
+      <p class="tip-desc">Proses analisis membutuhkan waktu 3–10 detik tergantung jumlah ulasan.</p>
+    </div>
+  </div>
+  <div class="tip-card">
+    <div class="tip-icon">🎯</div>
+    <div>
+      <div class="tip-title">Akurasi Terbaik</div>
+      <p class="tip-desc">Produk dengan 50+ ulasan menghasilkan analisis yang lebih akurat dan terpercaya.</p>
+    </div>
+  </div>
+  <div class="tip-card">
+    <div class="tip-icon">🌐</div>
+    <div>
+      <div class="tip-title">Bahasa Ulasan</div>
+      <p class="tip-desc">Sistem dioptimalkan untuk ulasan Bahasa Indonesia dan campuran (Inggris-Indonesia).</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setUrl(el) {
+    const names = {
+      "Smartphone Redmi Note" : "https://shopee.co.id/Xiaomi-Redmi-Note-13-Pro-5G-i.12345.9876543",
+      "Sepatu Olahraga Pria"  : "https://shopee.co.id/Sepatu-Running-Pria-Sport-i.23456.8765432",
+      "Charger Type-C 65W"    : "https://shopee.co.id/Charger-TypeC-65W-GaN-Fast-Charging-i.34567.7654321",
+      "Tas Wanita Kulit"      : "https://shopee.co.id/Tas-Selempang-Wanita-Kulit-PU-Premium-i.45678.6543210",
+      "Suplemen Vitamin C"    : "https://shopee.co.id/Vitamin-C-1000mg-Effervescent-Imun-Booster-i.56789.5432109",
+    };
+    const url = names[el.textContent.trim()];
+    if (url) document.getElementById("urlInput").value = url;
+  }
+
+  document.getElementById("analysisForm").addEventListener("submit", function(e) {
+    const url = document.getElementById("urlInput").value.trim();
+    if (url) {
+      document.getElementById("loadingOverlay").classList.add("show");
+    }
+  });
+</script>
+
+{% endblock %}
